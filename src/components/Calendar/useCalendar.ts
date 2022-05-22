@@ -1,15 +1,10 @@
 import { useReducer } from "react";
 import * as dayjs from "dayjs";
+import { DayObj, State, Action, ActionTypes } from "./calendarTypes";
 
-const actionTypes = {
-  setSelected: "SET_SELECTED",
-  nextMonth: "NEXT_MONTH",
-  prevMonth: "PREV_MONTH",
-};
-
-const calendarReducer = (state: any, action: any) => {
+const calendarReducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case actionTypes.setSelected: {
+    case ActionTypes.setSelected: {
       return {
         ...state,
         currentMonthStartDate: action.payload.startOf("M"),
@@ -19,7 +14,7 @@ const calendarReducer = (state: any, action: any) => {
         weeks: getDateList(action.payload.startOf("M"), action.payload),
       };
     }
-    case actionTypes.nextMonth: {
+    case ActionTypes.nextMonth: {
       const next = state.currentMonthStartDate.add(1, "M");
       return {
         ...state,
@@ -29,7 +24,7 @@ const calendarReducer = (state: any, action: any) => {
         weeks: getDateList(next.startOf("M"), state.selected),
       };
     }
-    case actionTypes.prevMonth: {
+    case ActionTypes.prevMonth: {
       const prev = state.currentMonthStartDate.subtract(1, "M");
       return {
         ...state,
@@ -45,15 +40,7 @@ const calendarReducer = (state: any, action: any) => {
   }
 };
 
-const initialState = {
-  selected: null,
-  currentMonthStartDate: null,
-  currentMonth: null,
-  currentYear: null,
-  weeks: null,
-};
-
-const getInitialState = () => {
+const getInitialState = (): State => {
   const daylist = getDateList(dayjs());
   return {
     selected: dayjs(),
@@ -64,9 +51,12 @@ const getInitialState = () => {
   };
 };
 
-const getDateList = (date: any, selected = date) => {
+const getDateList = (
+  date: dayjs.Dayjs,
+  selected: dayjs.Dayjs = date
+): Array<Array<DayObj>> => {
   const start = date.startOf("M");
-  const days = [];
+  const days: Array<DayObj> = [];
   for (let i = 0; i < date.daysInMonth(); i++) {
     let curr = start.add(i, "day");
     days.push({
@@ -92,26 +82,24 @@ const getDateList = (date: any, selected = date) => {
     });
   }
 
-  let weeks = [];
+  let weeks: Array<Array<DayObj>> = [];
   for (let i = 0; i < 6; i += 1) {
     weeks.push(days.slice(i * 7, (i + 1) * 7));
   }
   return weeks;
 };
 
+const initialState = getInitialState();
+
 const useCalendar = () => {
-  const [state, dispatch] = useReducer(
-    calendarReducer,
-    initialState,
-    getInitialState
-  );
+  const [state, dispatch] = useReducer(calendarReducer, initialState);
 
-  const setDate = (date: any) =>
-    dispatch({ type: actionTypes.setSelected, payload: date });
+  const setDate = (date: dayjs.Dayjs) =>
+    dispatch({ type: ActionTypes.setSelected, payload: date });
 
-  const nextMonth = () => dispatch({ type: actionTypes.nextMonth });
+  const nextMonth = () => dispatch({ type: ActionTypes.nextMonth });
 
-  const prevMonth = () => dispatch({ type: actionTypes.prevMonth });
+  const prevMonth = () => dispatch({ type: ActionTypes.prevMonth });
 
   return {
     ...state,

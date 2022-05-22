@@ -1,19 +1,9 @@
-import React from "react";
 import useCalendar from "./useCalendar";
 import { BiChevronRight, BiChevronLeft } from "react-icons/bi";
 
-const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
-
 function Calendar() {
-  const {
-    weeks,
-    setDate,
-    selected,
-    currentMonth,
-    currentYear,
-    prevMonth,
-    nextMonth,
-  } = useCalendar();
+  const { weeks, setDate, currentMonth, currentYear, prevMonth, nextMonth } =
+    useCalendar();
 
   return (
     <>
@@ -38,7 +28,7 @@ function Calendar() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-7 mt-2 text-xs leading-6 text-center text-gray-500">
+          <div className="grid grid-cols-7 mt-2 text-xs leading-6 text-center text-gray-500 select-none">
             <div>S</div>
             <div>M</div>
             <div>T</div>
@@ -59,6 +49,9 @@ function Calendar() {
                         ? "hover:bg-blue-100"
                         : "text-gray-400 hover:bg-gray-100"
                     } ${item?.isSelected ? "bg-green-100 font-medium" : ""}
+                    ${
+                      item?.date?.format("dd") == "Su" ? "hover:bg-red-100" : ""
+                    }
                     `}
                     onClick={() => setDate(item?.date)}
                   >
